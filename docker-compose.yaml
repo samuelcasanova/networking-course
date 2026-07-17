@@ -1,0 +1,34 @@
+services:
+  # --- Bridge network: two containers that can talk to each other ---
+  web:
+    image: nginx:alpine
+    container_name: web
+    networks:
+      - labnet
+    ports:
+      - "8080:80" # host:container port mapping (NAT through the bridge)
+
+  client:
+    image: alpine:latest
+    container_name: client
+    command: sleep infinity
+    networks:
+      - labnet
+
+  # --- Host mode: shares the host's network stack (no isolation, no port mapping) ---
+  hostnet:
+    image: alpine:latest
+    container_name: hostnet
+    command: sleep infinity
+    network_mode: host
+
+  # --- None mode: only a loopback interface, no external connectivity ---
+  nonet:
+    image: alpine:latest
+    container_name: nonet
+    command: sleep infinity
+    network_mode: none
+
+networks:
+  labnet:
+    driver: bridge
